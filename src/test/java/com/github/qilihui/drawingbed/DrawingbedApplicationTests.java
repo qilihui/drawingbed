@@ -1,10 +1,12 @@
 package com.github.qilihui.drawingbed;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.http.HttpUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Date;
 import java.util.HashMap;
 
 //@SpringBootTest
@@ -18,6 +20,14 @@ class DrawingbedApplicationTests {
 
         String result = HttpUtil.post("http://abiao.me:6688/upload", paramMap);
         System.out.println(result);
+    }
+    private String getYearMonthDayUrl() {
+        Date date = DateUtil.date();
+        return DateUtil.format(date, "/yyyy/MM/dd/");
+    }
+    @Test
+    void testDate(){
+        System.out.println(getYearMonthDayUrl());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.github.qilihui.drawingbed.controller;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import com.github.qilihui.drawingbed.util.NameUtil;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Date;
 
 /**
  * @author qilihui
@@ -34,6 +36,7 @@ public class FileController {
         if (file.isEmpty()) {
             return Result.fail("上传失败，请选择文件");
         }
+        String date = getYearMonthDayUrl();
         try {
             String type = FileTypeUtil.getType(file.getInputStream(), file.getOriginalFilename());
             if (!NameUtil.isImage(type)) {
@@ -44,7 +47,8 @@ public class FileController {
             File newFile = null;
             for (; i > 0; i--) {
                 newName = NameUtil.currentTimeMillisToUrl(type);
-                newFile = new File(imaPath + "/" + newName);
+                FileUtil.mkdir(imaPath + date);
+                newFile = new File(imaPath + date + newName);
                 if (!newFile.exists()) {
                     break;
                 }
@@ -58,7 +62,7 @@ public class FileController {
             String retUrl = request
                     .getRequestURL()
                     .toString()
-                    .replace(request.getServletPath(), "/image") + "/" + newName;
+                    .replace(request.getServletPath(), "/image") + date + newName;
             return Result.ok(retUrl);
         } catch (IOException e) {
             log.error("写入文件出错{}", e.getMessage());
@@ -66,9 +70,13 @@ public class FileController {
         return Result.fail("上传失败!");
     }
 
-    @GetMapping("/image/{name}")
-    public void getImage(@PathVariable("name") String name, HttpServletResponse response) {
-        File file = new File(imaPath + "/" + name);
+    @GetMapping("/image/{year}/{month}/{day}/{name}")
+    public void getImage(@PathVariable("name") String name,
+                         @PathVariable("year") String year,
+                         @PathVariable("month") String month,
+                         @PathVariable("day") String day,
+                         HttpServletResponse response) {
+        File file = new File(imaPath + getYearMonthDayUrl(year, month, day) + name);
         OutputStream os = null;
         FileInputStream fis = null;
         byte[] data = null;
@@ -89,5 +97,14 @@ public class FileController {
         } catch (IOException e) {
             log.error("读取文件出错{}", e.getMessage());
         }
+    }
+
+    private String getYearMonthDayUrl() {
+        Date date = DateUtil.date();
+        return DateUtil.format(date, "/yyyy/MM/dd/");
+    }
+
+    private String getYearMonthDayUrl(String year, String month, String day) {
+        return "/" + year + "/" + month + "/" + day + "/";
     }
 }
