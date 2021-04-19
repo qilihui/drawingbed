@@ -12,7 +12,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
     ports:
-      - 8080:8080
+      - 8080:6688
     volumes:
       - ./data/images:/images
     entrypoint: ["java","-Dspring.profiles.active=aliyun","-jar","/work/target/drawingbed-0.0.1-SNAPSHOT.jar"]

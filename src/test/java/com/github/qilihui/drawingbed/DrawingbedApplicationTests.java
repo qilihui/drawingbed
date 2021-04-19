@@ -10,13 +10,13 @@ import java.util.HashMap;
 //@SpringBootTest
 class DrawingbedApplicationTests {
 
-//    @Test
+    @Test
     void contextLoads() {
         HashMap<String, Object> paramMap = new HashMap<>();
 //文件上传只需将参数中的键指定（默认file），值设为文件对象即可，对于使用者来说，文件上传与普通表单提交并无区别
-        paramMap.put("file", FileUtil.file("C:\\Users\\Tom\\Pictures\\Spotlight\\Vertical\\1ac56ece94e2f8b9483ef456092be11618351f242213f6a2c740dfc33a2551bc.jpg"));
+        paramMap.put("file", FileUtil.file("C:\\Users\\Tom\\Desktop\\src=http___09imgmini.eastday.com_mobile_20180916_20180916203923_d41d8cd98f00b204e9800998ecf8427e_2.jpeg&refer=http___09imgmini.eastday.jfif"));
 
-        String result = HttpUtil.post("http://localhost:8080/upload", paramMap);
+        String result = HttpUtil.post("http://abiao.me:6688/upload", paramMap);
         System.out.println(result);
     }
 
