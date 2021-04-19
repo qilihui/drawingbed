@@ -3,10 +3,6 @@ services:
   drawingbed-server:
     container_name: drawingbed-server
     build: .
-#    image: online-forum:0.0.1
-#    depends_on:
-#      - forum-mysql
-#      - forum-redis
     working_dir: /work
     restart: always
     environment:
