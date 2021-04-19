@@ -1,2 +1,3 @@
 drawing:
   path: D:\Temp\img
+  retryCount: 5
