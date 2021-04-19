@@ -8,7 +8,7 @@ curl --location --request POST 'abiao.me:6688/upload' \
 ~~~
 * 部署：采用 docker-compose 部署，执行：
 ~~~
-https://github.com/qilihui/drawingbed.git
+git clone https://github.com/qilihui/drawingbed.git
 cd drawingbed
 docker-compose up -d
 ~~~
@@ -28,7 +28,7 @@ services:
       # 6688 为主机端口号，任意修改
     volumes:
       - ./data/images:/images
-      # ./data/image 是保存在本机的文件，任意修改
+      # ./data/images 是保存在本机的文件，任意修改
     entrypoint: ["java","-Dspring.profiles.active=aliyun","-jar","/work/target/drawingbed-0.0.1-SNAPSHOT.jar"]
 ~~~
 ### 待开发
