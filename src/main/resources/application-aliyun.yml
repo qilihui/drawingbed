@@ -1,0 +1,3 @@
+drawing:
+  path: /images
+  retryCount: 5

@@ -10,7 +10,7 @@ import java.util.HashMap;
 //@SpringBootTest
 class DrawingbedApplicationTests {
 
-    @Test
+//    @Test
     void contextLoads() {
         HashMap<String, Object> paramMap = new HashMap<>();
 //文件上传只需将参数中的键指定（默认file），值设为文件对象即可，对于使用者来说，文件上传与普通表单提交并无区别

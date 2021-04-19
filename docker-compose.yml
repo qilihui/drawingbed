@@ -1,0 +1,18 @@
+version: '3'
+services:
+  drawingbed-server:
+    container_name: drawingbed-server
+    build: .
+#    image: online-forum:0.0.1
+#    depends_on:
+#      - forum-mysql
+#      - forum-redis
+    working_dir: /work
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data/images:/images
+    entrypoint: ["java","-Dspring.profiles.active=aliyun","-jar","/work/target/drawingbed-0.0.1-SNAPSHOT.jar"]

@@ -55,7 +55,10 @@ public class FileController {
                 return Result.fail("上传失败，请稍后重试");
             }
             file.transferTo(newFile);
-            String retUrl = request.getRequestURL().toString().replace(request.getServletPath(), "/image") + "/" + newName;
+            String retUrl = request
+                    .getRequestURL()
+                    .toString()
+                    .replace(request.getServletPath(), "/image") + "/" + newName;
             return Result.ok(retUrl);
         } catch (IOException e) {
             log.error("写入文件出错{}", e.getMessage());
