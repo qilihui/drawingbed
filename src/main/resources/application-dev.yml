@@ -1,3 +1,8 @@
 drawing:
   path: D:\Temp\img
   retryCount: 5
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB

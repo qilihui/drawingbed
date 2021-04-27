@@ -13,6 +13,12 @@ public class Result {
     //响应消息
     private String msg;
     //响应中的数据
+    /**
+     * 200: OK
+     * 410: 图片不存在
+     * 420: 图片类型错误
+     * 500: 服务器内部错误
+     */
     private Object data;
 
     public Result() {
@@ -48,5 +54,35 @@ public class Result {
      */
     public static Result fail(String msg) {
         return new Result(400, msg, null);
+    }
+
+    /**
+     * 图片不存在
+     *
+     * @param msg 失败提示信息
+     * @return
+     */
+    public static Result failImgNoExist(String msg) {
+        return new Result(410, msg, null);
+    }
+
+    /**
+     * 图片类型错误
+     *
+     * @param msg 失败提示信息
+     * @return
+     */
+    public static Result failImgTypeErr(String msg) {
+        return new Result(420, msg, null);
+    }
+
+    /**
+     * 服务器内部错误
+     *
+     * @param msg 失败提示信息
+     * @return
+     */
+    public static Result failServerErr(String msg) {
+        return new Result(500, msg, null);
     }
 }

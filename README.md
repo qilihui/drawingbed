@@ -31,5 +31,13 @@ services:
       # ./data/images 是保存在本机的文件，任意修改
     entrypoint: ["java","-Dspring.profiles.active=aliyun","-jar","/work/target/drawingbed-0.0.1-SNAPSHOT.jar"]
 ~~~
+* 返回值
+    - status: 状态码
+        - 200: 正常
+        - 410: 图片为空
+        - 420: 图片类型错误
+        - 500: 服务器内部错误
+    - msg: 消息提示
+    - data: 图片URL or null
 ### 待开发
 * 限制用户请求的频率

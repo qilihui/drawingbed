@@ -33,14 +33,14 @@ public class FileController {
     @PostMapping("/upload")
     @ResponseBody
     public Result upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        if (file.isEmpty()) {
-            return Result.fail("上传失败，请选择文件");
+        if (file == null || file.isEmpty()) {
+            return Result.failImgNoExist("上传失败，请选择文件");
         }
         String date = getYearMonthDayUrl();
         try {
             String type = FileTypeUtil.getType(file.getInputStream(), file.getOriginalFilename());
             if (!NameUtil.isImage(type)) {
-                return Result.fail("文件类型错误");
+                return Result.failImgTypeErr("文件类型错误");
             }
             int i = RETRY_COUNT;
             String newName = null;
@@ -56,7 +56,7 @@ public class FileController {
             }
             if (i <= 0) {
                 log.error("文件名重复，重试{}次后失败", RETRY_COUNT);
-                return Result.fail("上传失败，请稍后重试");
+                return Result.failServerErr("上传失败，请稍后重试");
             }
             file.transferTo(newFile);
             String retUrl = request
@@ -67,7 +67,7 @@ public class FileController {
         } catch (IOException e) {
             log.error("写入文件出错{}", e.getMessage());
         }
-        return Result.fail("上传失败!");
+        return Result.failServerErr("上传失败!");
     }
 
     @GetMapping("/image/{year}/{month}/{day}/{name}")
