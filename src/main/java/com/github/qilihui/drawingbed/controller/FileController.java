@@ -1,12 +1,9 @@
 package com.github.qilihui.drawingbed.controller;
 
-import ch.qos.logback.core.util.TimeUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.github.qilihui.drawingbed.config.DrawingBedConfig;
 import com.github.qilihui.drawingbed.util.NameUtil;
@@ -32,9 +29,13 @@ public class FileController {
 
     private final DrawingBedConfig drawingBedConfig;
 
+    private final File tmpDirectory;
+
     @Autowired
     public FileController(DrawingBedConfig drawingBedConfig) {
         this.drawingBedConfig = drawingBedConfig;
+        tmpDirectory = new File(this.drawingBedConfig.getPath() + "/tmp");
+        FileUtil.mkdir(tmpDirectory);
     }
 
     @PostMapping("/upload")
@@ -49,7 +50,7 @@ public class FileController {
             if (!NameUtil.isImage(type)) {
                 return Result.failImgTypeErr("文件类型错误");
             }
-            File tempFile = File.createTempFile(IdUtil.randomUUID(), "." + type);
+            File tempFile = File.createTempFile(IdUtil.randomUUID(), "." + type, tmpDirectory);
             file.transferTo(tempFile);
             String md5 = SecureUtil.md5(tempFile);
             boolean delete = tempFile.delete();
