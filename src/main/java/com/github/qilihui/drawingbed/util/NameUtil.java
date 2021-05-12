@@ -1,7 +1,10 @@
 package com.github.qilihui.drawingbed.util;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,14 +61,14 @@ public class NameUtil {
      * @param val 正整数
      * @return 加入随机数
      */
-    public static long insertRandomBitPer5Bits(long val) {
+    public static long insertRandomBitPer3Bits(long val) {
         long result = val;
         long high = val;
         for (int i = 0; i < 10; i++) {
             if (high == 0) {
                 break;
             }
-            int pos = 5 + 5 * i + i;
+            int pos = 3 + 3 * i + i;
             high = result >> pos;
             result = ((high << 1 | RandomUtil.randomInt(0, 2)) << pos)
                     | (result & (-1L >>> (64 - pos)));
@@ -80,12 +83,19 @@ public class NameUtil {
      * @return url
      */
     public static String numToShortUrl(long id) {
-        long l = insertRandomBitPer5Bits(id);
+        long l = insertRandomBitPer3Bits(id);
         return toBase62(l);
     }
 
-    public static String currentTimeMillisToUrl(String type) {
-        return numToShortUrl(System.currentTimeMillis()) + "." + type;
+    /**
+     * 从当天开始 根据时间戳获取文件名
+     * @param type 文件格式
+     * @return 文件名
+     */
+    public static String getFileNameByThisDayTime(String type) {
+        DateTime dateTime = DateUtil.beginOfDay(new Date());
+        long fileName = DateUtil.current() - dateTime.getTime() + 10000000L;
+        return numToShortUrl(fileName) + "." + type;
     }
 
     public static boolean isImage(String name) {
