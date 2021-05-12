@@ -1,18 +1,26 @@
 # 图床网
 
-* 文件名处理方式：使用时间戳转换为二进制，加入随机数之后在转换为62进制
+* 前端地址
+~~~
+https://github.com/kilicmu/Tools-WebSite
+~~~
 * 请求示例
+
 ~~~
 curl --location --request POST 'abiao.me:6688/upload' \
 --form 'file=@"/C:/Users/Tom/Desktop/test.jpg"'
 ~~~
+
 * 部署：采用 docker-compose 部署，执行：
+
 ~~~
 git clone https://github.com/qilihui/drawingbed.git
 cd drawingbed
 docker-compose up -d
 ~~~
+
 * 修改
+
 ~~~
 version: '3'
 services:
@@ -31,6 +39,7 @@ services:
       # ./data/images 是保存在本机的文件，任意修改
     entrypoint: ["java","-Dspring.profiles.active=aliyun","-jar","/work/target/drawingbed-0.0.1-SNAPSHOT.jar"]
 ~~~
+
 * 返回值
     - status: 状态码
         - 200: 正常
@@ -39,5 +48,7 @@ services:
         - 500: 服务器内部错误
     - msg: 消息提示
     - data: 图片URL or null
+
 ### 待开发
+
 * 限制用户请求的频率

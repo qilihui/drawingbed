@@ -1,8 +1,13 @@
 package com.github.qilihui.drawingbed.controller;
 
+import ch.qos.logback.core.util.TimeUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.github.qilihui.drawingbed.config.DrawingBedConfig;
 import com.github.qilihui.drawingbed.util.NameUtil;
 import com.github.qilihui.drawingbed.util.Result;
@@ -44,30 +49,24 @@ public class FileController {
             if (!NameUtil.isImage(type)) {
                 return Result.failImgTypeErr("文件类型错误");
             }
-            int i = drawingBedConfig.getRetryCount();
-            String newName = null;
-            File newFile = null;
-            for (; i > 0; i--) {
-                newName = NameUtil.getFileNameByThisDayTime(type);
-                FileUtil.mkdir(drawingBedConfig.getPath() + date);
-                newFile = new File(drawingBedConfig.getPath() + date + newName);
-                if (!newFile.exists()) {
-                    break;
-                }
-                log.warn("文件名{}重读，第{}次尝试", newName, drawingBedConfig.getRetryCount() - i + 1);
+            File tempFile = File.createTempFile(IdUtil.randomUUID(), "." + type);
+            file.transferTo(tempFile);
+            String md5 = SecureUtil.md5(tempFile);
+            boolean delete = tempFile.delete();
+            String newName = md5 + "." + type;
+            FileUtil.mkdir(drawingBedConfig.getPath() + date);
+            File newFile = new File(drawingBedConfig.getPath() + date + newName);
+            if (!newFile.exists()) {
+                file.transferTo(newFile);
             }
-            if (i <= 0) {
-                log.error("文件名重复，重试{}次后失败", drawingBedConfig.getRetryCount());
-                return Result.failServerErr("上传失败，请稍后重试");
-            }
-            file.transferTo(newFile);
+            log.info("上传文件:{}", date + newName);
             String retUrl = request
                     .getRequestURL()
                     .toString()
                     .replace(request.getServletPath(), "/image") + date + newName;
             return Result.ok(retUrl);
         } catch (IOException e) {
-            log.error("写入文件出错{}", e.getMessage());
+            log.error("写入文件出错:{}", e.getMessage());
         }
         return Result.failServerErr("上传失败!");
     }
@@ -79,9 +78,9 @@ public class FileController {
                          @PathVariable("day") String day,
                          HttpServletResponse response) {
         File file = new File(drawingBedConfig.getPath() + getYearMonthDayUrl(year, month, day) + name);
-        OutputStream os = null;
-        FileInputStream fis = null;
-        byte[] data = null;
+        OutputStream os;
+        FileInputStream fis;
+        byte[] data;
         if (!file.exists()) {
             return;
         }
