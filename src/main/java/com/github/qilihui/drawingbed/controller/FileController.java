@@ -5,6 +5,7 @@ import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.github.qilihui.drawingbed.annotation.RateLimiter;
 import com.github.qilihui.drawingbed.config.DrawingBedConfig;
 import com.github.qilihui.drawingbed.util.NameUtil;
 import com.github.qilihui.drawingbed.util.Result;
@@ -40,6 +41,7 @@ public class FileController {
 
     @PostMapping("/upload")
     @ResponseBody
+    @RateLimiter(max = 5, key = "uploadLimit")
     public Result upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (file == null || file.isEmpty()) {
             return Result.failImgNoExist("上传失败，请选择文件");
@@ -59,8 +61,8 @@ public class FileController {
             File newFile = new File(drawingBedConfig.getPath() + date + newName);
             if (!newFile.exists()) {
                 file.transferTo(newFile);
+                log.info("上传文件:{}", date + newName);
             }
-            log.info("上传文件:{}", date + newName);
             String retUrl = request
                     .getRequestURL()
                     .toString()

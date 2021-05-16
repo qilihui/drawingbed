@@ -17,6 +17,7 @@ public class Result {
      * 200: OK
      * 410: 图片不存在
      * 420: 图片类型错误
+     * 430: 达到接口请求速率上限
      * 500: 服务器内部错误
      */
     private Object data;
@@ -74,6 +75,16 @@ public class Result {
      */
     public static Result failImgTypeErr(String msg) {
         return new Result(420, msg, null);
+    }
+
+    /**
+     * 达到接口请求速率上线
+     *
+     * @param msg 失败提示信息
+     * @return
+     */
+    public static Result failRateLimiter(String msg) {
+        return new Result(430, msg, null);
     }
 
     /**
