@@ -12,8 +12,8 @@ services:
     ports:
       - 6688:8080
     volumes:
-      - ./data/images:/images
-      - ./data/logs:/work/logs
+      - ../data/images:/images
+      - ../data/logs:/work/logs
     entrypoint: ["java","-Dspring.profiles.active=aliyun","-jar","/work/target/drawingbed-0.0.1-SNAPSHOT.jar"]
 
   forum-redis:
@@ -23,4 +23,4 @@ services:
     ports:
       - 6379
     volumes:
-      - ./data/redis:/data
+      - ../data/redis:/data
