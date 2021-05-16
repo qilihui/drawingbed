@@ -3,6 +3,7 @@ package com.github.qilihui.drawingbed.config.aop;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.qilihui.drawingbed.util.IpUtil;
+import com.github.qilihui.drawingbed.util.ThreadLocalUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,7 +65,7 @@ public class AopConfig {
         final Log l = Log.builder()
                 .threadId(Long.toString(Thread.currentThread().getId()))
                 .threadName(Thread.currentThread().getName())
-                .ip(IpUtil.getIpAddr(request))
+                .ip(ThreadLocalUtil.getIp())
                 .url(request.getRequestURL().toString())
                 .classMethod(String.format("%s.%s", point.getSignature().getDeclaringTypeName(),
                         point.getSignature().getName()))

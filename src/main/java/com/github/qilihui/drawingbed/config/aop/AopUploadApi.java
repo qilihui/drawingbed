@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.github.qilihui.drawingbed.annotation.RateLimiter;
 import com.github.qilihui.drawingbed.exception.RateLimiterException;
 import com.github.qilihui.drawingbed.util.IpUtil;
+import com.github.qilihui.drawingbed.util.ThreadLocalUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,8 @@ public class AopUploadApi {
      * 上传接口切点
      */
     @Pointcut("@annotation(com.github.qilihui.drawingbed.annotation.RateLimiter)")
-    public void rateLimit() { }
+    public void rateLimit() {
+    }
 
     @Around("rateLimit()")
     public Object aroundUpload(ProceedingJoinPoint point) throws Throwable {
@@ -68,7 +70,7 @@ public class AopUploadApi {
                     + SEPARATOR + header
                     + SEPARATOR + userAgent.getBrowser().toString()
                     + SEPARATOR + userAgent.getOperatingSystem().toString()
-                    + SEPARATOR + IpUtil.getIpAddr(request);
+                    + SEPARATOR + ThreadLocalUtil.getIp();
 
             long max = rateLimiter.max();
             long timeout = rateLimiter.timeout();
