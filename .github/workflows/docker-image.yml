@@ -27,4 +27,7 @@ jobs:
 
       # 触发服务器部署脚本
       - name: Trigger server deployment script
-        run: ssh ${{ secrets.user }}@${{ secrets.host }} "${{ secrets.script }}"
+        run: ssh ${{ secrets.user }}@${{ secrets.host }}
+
+      -name: run script
+      - run: ${{ secrets.script }}
