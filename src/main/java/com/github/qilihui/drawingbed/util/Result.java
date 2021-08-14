@@ -18,6 +18,7 @@ public class Result {
      * 410: 图片不存在
      * 420: 图片类型错误
      * 430: 达到接口请求速率上限
+     * 440: 达到文件大小限制
      * 500: 服务器内部错误
      */
     private Object data;
@@ -95,5 +96,9 @@ public class Result {
      */
     public static Result failServerErr(String msg) {
         return new Result(500, msg, null);
+    }
+
+    public static Result failFileSizeLimitExceeded() {
+        return new Result(440, OjConstant.FILE_SIZE_LIMIT_EXCEEDED, null);
     }
 }
