@@ -6,6 +6,7 @@ if [ ! -f $app ]; then
     echo "error: 打包失败"
     exit
 fi
+echo "打包完成, 开始构建镜像"
 docker-compose up -d
-echo "打包完成"
+echo "done"
 

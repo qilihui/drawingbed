@@ -2,6 +2,7 @@ version: '3'
 services:
   drawingbed-server:
     container_name: drawingbed-server
+    image: drawingbed-server:latest
     build: .
     working_dir: /work
     restart: always
