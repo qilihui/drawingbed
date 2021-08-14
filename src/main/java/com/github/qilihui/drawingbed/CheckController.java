@@ -14,6 +14,6 @@ public class CheckController {
     @RequestMapping("/ping")
     public String ping(){
         log.info("执行心跳检测");
-        return "OK-";
+        return "-OK-";
     }
 }
