@@ -19,7 +19,12 @@ jobs:
       - name: Connect to server
         uses: webfactory/ssh-agent@v0.4.1
         with:
-          host: ${{ secrets.host }}
-          username: ${{ secrets.user }}
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: ${{ secrets.script }}
+
+      # 初始化 knownhosts
+      - name: Setup knownhosts
+        run: ssh-keyscan ${{ secrets.host }} >> ~/.ssh/known_hosts
+
+      # 触发服务器部署脚本
+      - name: Trigger server deployment script
+        run: ssh ${{ secrets.user }}@${{ secrets.host }} "sh ${{ secrets.script }}"
