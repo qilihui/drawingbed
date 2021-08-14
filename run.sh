@@ -10,4 +10,4 @@ echo "打包完成, 开始构建镜像"
 docker rmi -f drawingbed-server:latest
 docker-compose up -d
 echo "done"
-
+return 0
