@@ -3,7 +3,9 @@ package com.github.qilihui.drawingbed.config.aop;
 import cn.hutool.core.util.StrUtil;
 import com.github.qilihui.drawingbed.annotation.RateLimiter;
 import com.github.qilihui.drawingbed.exception.RateLimiterException;
+import com.github.qilihui.drawingbed.exception.SecurityException;
 import com.github.qilihui.drawingbed.util.IpUtil;
+import com.github.qilihui.drawingbed.util.JwtUtil;
 import com.github.qilihui.drawingbed.util.ThreadLocalUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,17 @@ public class AopUploadApi {
 
     @Around("rateLimit()")
     public Object aroundUpload(ProceedingJoinPoint point) throws Throwable {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
+        String jwt = JwtUtil.getJwtFromRequest(request);
+        try {
+            String s = JwtUtil.parseJWT(jwt);
+            if (s != null) {
+                return point.proceed();
+            }
+        } catch (SecurityException e) {
+            log.info(e.getMessage());
+        }
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
         // 通过 AnnotationUtils.findAnnotation 获取 RateLimiter 注解
@@ -62,8 +75,6 @@ public class AopUploadApi {
                 key = method.getDeclaringClass().getName() + StrUtil.DOT + method.getName();
             }
             // 最终限流的 key 为 前缀 + IP地址
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
             String header = request.getHeader("User-Agent");
             UserAgent userAgent = UserAgent.parseUserAgentString(header);
             key = key

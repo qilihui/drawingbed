@@ -20,7 +20,7 @@ services:
     container_name: drawingbed-redis
     image: redis:6.0
     restart: always
-    ports:
-      - 6379
+#    ports:
+#      - 6379
     volumes:
       - ../data/redis:/data
