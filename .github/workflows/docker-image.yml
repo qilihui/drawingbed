@@ -1,0 +1,30 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    # 连接到远程服务器
+    - name: Connect to server
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    
+    # 初始化 knownhosts
+    - name: Setup knownhosts
+      run: ssh-keyscan ${{ secrets.host }} >> ~/.ssh/known_hosts
+
+    # 触发服务器部署脚本
+    - name: Trigger server deployment script
+      run: ssh ${{ secrets.user }}@${{ secrets.host }} "sh ${{ secrets.script }}"
