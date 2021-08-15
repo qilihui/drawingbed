@@ -44,13 +44,13 @@ public class FileController {
     @RateLimiter(max = 5, key = "uploadLimit")
     public Result upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (file == null || file.isEmpty()) {
-            return Result.failImgNoExist("上传失败，请选择文件");
+            return Result.failImgNoExist();
         }
         String date = getYearMonthDayUrl();
         try {
             String type = FileTypeUtil.getType(file.getInputStream(), file.getOriginalFilename());
             if (!NameUtil.isImage(type)) {
-                return Result.failImgTypeErr("文件类型错误");
+                return Result.failImgTypeErr();
             }
             File tempFile = File.createTempFile(IdUtil.randomUUID(), "." + type, tmpDirectory);
             file.transferTo(tempFile);
@@ -71,7 +71,7 @@ public class FileController {
         } catch (IOException e) {
             log.error("写入文件出错:{}", e.getMessage());
         }
-        return Result.failServerErr("上传失败!");
+        return Result.failServerErr();
     }
 
     @GetMapping("/image/{year}/{month}/{day}/{name}")

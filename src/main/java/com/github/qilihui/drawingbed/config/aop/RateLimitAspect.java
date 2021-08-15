@@ -2,11 +2,8 @@ package com.github.qilihui.drawingbed.config.aop;
 
 import cn.hutool.core.util.StrUtil;
 import com.github.qilihui.drawingbed.annotation.RateLimiter;
-import com.github.qilihui.drawingbed.exception.RateLimiterException;
 import com.github.qilihui.drawingbed.exception.SecurityException;
-import com.github.qilihui.drawingbed.util.IpUtil;
-import com.github.qilihui.drawingbed.util.JwtUtil;
-import com.github.qilihui.drawingbed.util.ThreadLocalUtil;
+import com.github.qilihui.drawingbed.util.*;
 import eu.bitwalker.useragentutils.UserAgent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +17,11 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,14 +32,14 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class AopUploadApi {
+public class RateLimitAspect {
     private final static String SEPARATOR = ":";
     private final static String REDIS_LIMIT_KEY_PREFIX = "limit:";
     private final StringRedisTemplate stringRedisTemplate;
     private final RedisScript<Long> limitRedisScript;
 
     /**
-     * 上传接口切点
+     * 上传限流接口切点
      */
     @Pointcut("@annotation(com.github.qilihui.drawingbed.annotation.RateLimiter)")
     public void rateLimit() {
@@ -53,17 +47,22 @@ public class AopUploadApi {
 
     @Around("rateLimit()")
     public Object aroundUpload(ProceedingJoinPoint point) throws Throwable {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
+        //Token验证
+        HttpServletRequest request = ProjectHttpUtil.getRequest();
         String jwt = JwtUtil.getJwtFromRequest(request);
         try {
-            String s = JwtUtil.parseJWT(jwt);
-            if (s != null) {
-                return point.proceed();
+            if (StrUtil.isNotEmpty(jwt)) {
+                String s = JwtUtil.parseJWT(jwt);
+                if (s != null) {
+                    return point.proceed();
+                }
             }
         } catch (SecurityException e) {
             log.info(e.getMessage());
+            ProjectHttpUtil.setResponse(Result.failTokenInvalid(e.getMessage()));
+            return null;
         }
+        //请求限流
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
         // 通过 AnnotationUtils.findAnnotation 获取 RateLimiter 注解
@@ -88,7 +87,8 @@ public class AopUploadApi {
             TimeUnit timeUnit = rateLimiter.timeUnit();
             boolean limited = shouldLimited(key, max, timeout, timeUnit);
             if (limited) {
-                throw new RateLimiterException("手速太快了，慢点儿吧~");
+                ProjectHttpUtil.setResponse(Result.failRateLimiter());
+                return null;
             }
         }
 

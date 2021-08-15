@@ -33,7 +33,7 @@ import java.util.Objects;
 @Aspect
 @Component
 @Slf4j
-public class AopConfig {
+public class LogAspect {
     /**
      * 切入点
      */
