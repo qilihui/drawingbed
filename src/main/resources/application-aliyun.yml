@@ -4,7 +4,7 @@ drawing:
   Jwt:
     key: abcdbcda123456
 #    ttl: 60000 #(1分钟)
-    ttl: 604800000L #(7天)
+    ttl: 604800000 #(7天)
 
 spring:
   servlet:
