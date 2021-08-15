@@ -1,10 +1,9 @@
 package com.github.qilihui.drawingbed;
 
+import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Date;
 
 /**
  * @author qilihui
@@ -16,6 +15,6 @@ public class CheckController {
     @RequestMapping("/ping")
     public String ping(){
         log.info("执行心跳检测");
-        return String.valueOf(new Date().getTime());
+        return String.valueOf(DateUtil.now());
     }
 }
