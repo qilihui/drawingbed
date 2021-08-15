@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh --login
 echo "开始打包"
 mvn clean package -Dmaven.test.skip=true
 app="./target/drawingbed-0.0.1-SNAPSHOT.jar"
