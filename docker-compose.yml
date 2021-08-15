@@ -2,6 +2,7 @@ version: '3'
 services:
   drawingbed-server:
     container_name: drawingbed-server
+    image: drawingbed-server:latest
     build: .
     working_dir: /work
     restart: always
@@ -14,8 +15,7 @@ services:
     volumes:
       - ../data/images:/images
       - ../data/logs:/work/logs
-    entrypoint: ["java","-Dspring.profiles.active=aliyun","-jar","/work/target/drawingbed-0.0.1-SNAPSHOT.jar"]
-
+    entrypoint: ["java","-Dspring.profiles.active=aliyun","-jar","/work/app.jar"]
   forum-redis:
     container_name: drawingbed-redis
     image: redis:6.0
